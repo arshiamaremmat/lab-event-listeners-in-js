@@ -1,50 +1,47 @@
-const { document } = require('./helpers')
-const { expect } = require('chai')
+const { document, dom } = require('./helpers');
+const { expect, test, beforeAll, describe } = require('@jest/globals');
 
-// Sample test suite for JavaScript event handling
 describe('Handling Events with JavaScript', () => {
-  let changeColorButton
-  let resetColorButton
-  let textInput
-  let keyPressDisplay
-  let textInputDisplay
+  let changeColorButton;
+  let resetColorButton;
+  let textInput;
+  let keyPressDisplay;
+  let textInputDisplay;
 
-  before(() => {
-    changeColorButton = document.getElementById('changeColorButton')
-    resetColorButton = document.getElementById('resetColorButton')
-    textInput = document.getElementById('textInput')
-    keyPressDisplay = document.getElementById('keyPressDisplay')
-    textInputDisplay = document.getElementById('textInputDisplay')
-  })
+  beforeAll(() => {
+    // ✅ Load DOM elements after jsdom is ready
+    changeColorButton = document.getElementById('changeColorButton');
+    resetColorButton = document.getElementById('resetColorButton');
+    textInput = document.getElementById('textInput');
+    keyPressDisplay = document.getElementById('keyDisplay');
+    textInputDisplay = document.getElementById('liveDisplay');
 
-  it('should select the changeColorButton element', () => {
-    expect(changeColorButton).to.not.be.null
-  })
+    // ✅ Now that document is ready, import index.js to attach event listeners
+    require('../src/index.js');
+  });
 
-  it('should select the resetColorButton element', () => {
-    expect(resetColorButton).to.not.be.null
-  })
+  test('should select the changeColorButton element', () => {
+    expect(changeColorButton).not.toBeNull();
+  });
 
-  it('should select the textInput element', () => {
-    expect(textInput).to.not.be.null
-  })
+  test('should select the resetColorButton element', () => {
+    expect(resetColorButton).not.toBeNull();
+  });
 
-  it('should display the key pressed by the user', () => {
-    // Simulate key press
-    const event = new dom.window.KeyboardEvent('keydown', { key: 'A' })
-    document.dispatchEvent(event)
+  test('should select the textInput element', () => {
+    expect(textInput).not.toBeNull();
+  });
 
-    // Check if the keyPressDisplay has been updated
-    expect(keyPressDisplay.textContent).to.include('A')
-  })
+  test('should display the key pressed by the user', () => {
+    const event = new dom.window.KeyboardEvent('keydown', { key: 'A' });
+    document.dispatchEvent(event);
+    expect(keyPressDisplay.textContent).toContain('A');
+  });
 
-  it('should display user input in real-time', () => {
-    // Simulate user input
-    textInput.value = 'Hello'
-    const event = new dom.window.Event('input')
-    textInput.dispatchEvent(event)
-
-    // Check if the textInputDisplay has been updated
-    expect(textInputDisplay.textContent).to.include('Hello')
-  })
-})
+  test('should display user input in real-time', () => {
+    textInput.value = 'Hello';
+    const inputEvent = new dom.window.Event('input');
+    textInput.dispatchEvent(inputEvent);
+    expect(textInputDisplay.textContent).toContain('Hello');
+  });
+});
